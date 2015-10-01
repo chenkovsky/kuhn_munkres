@@ -47,7 +47,7 @@ val_type kuhn_munkres(const val_type* mat, uint32_t m, uint32_t n, uint32_t *ret
 
     int32_t* match_u = malloc(sizeof(int32_t)*m);//match for every row
     int32_t* match_v = malloc(sizeof(int32_t)*n);//match for every column
-    int32_t* tmp_match = malloc(sizeof(int32_t)*m);
+    int32_t* tmp_match = malloc(sizeof(int32_t)*n);
 
     int32_t* stack = malloc(sizeof(int32_t)*(m+n));
 
