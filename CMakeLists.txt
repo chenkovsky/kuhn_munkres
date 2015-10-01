@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 2.8.4)
+project(hungarian)
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -Wall -g -ggdb -std=c99")
+add_executable(hugarian_demo test.c max_weighted_match.c)
+add_library(hungarian SHARED max_weighted_match.c)
+set_target_properties(hungarian PROPERTIES SUFFIX .so)
