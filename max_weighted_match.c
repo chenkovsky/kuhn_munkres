@@ -5,6 +5,8 @@
 #include "max_weighted_match.h"
 #define false 0
 #define true 1
+#define STACK_VERSION
+//#undef STACK_VERSION
 static inline val_type max(val_type a,val_type b){
     return a>b?a:b;
 }
@@ -31,17 +33,25 @@ val_type kuhn_munkres(const val_type* mat, uint32_t m, uint32_t n, uint32_t *ret
     assert(m>0 && n>0 && mat);
     int transposed = false;
     val_type* dst = NULL;
+#ifdef STACK_VERSION
+    val_type dst_stack[m*n];
+#endif
     if (m>n) {
         transposed = true;
         //一定要m<=n
         //如果不对,那么转秩
+#ifndef STACK_VERSION
         dst = malloc(sizeof(val_type)*m*n);
+#else
+        dst = dst_stack;
+#endif
         transpose(dst, mat,m,n);
         uint32_t tmp = m;
         m = n;
         n = tmp;
         mat = dst;
     }
+#ifndef STACK_VERSION
     val_type* us = malloc(sizeof(val_type)*m); //label for every row
     val_type* vs = malloc(sizeof(val_type)*n);//label for every column
 
@@ -50,7 +60,16 @@ val_type kuhn_munkres(const val_type* mat, uint32_t m, uint32_t n, uint32_t *ret
     int32_t* tmp_match = malloc(sizeof(int32_t)*n);
 
     int32_t* stack = malloc(sizeof(int32_t)*(m+n));
+#else
+    val_type us[m]; //label for every row
+    val_type vs[n]; //label for every column
 
+    int32_t match_u[m];//match for every row
+    int32_t match_v[n];//match for every column
+    int32_t tmp_match[n];
+
+    int32_t stack[m+n];
+#endif
     int32_t p,q;
     //dual就是最小化点的权重总和
     //因为一条边两个端点的总和肯定大于等于边的权重
@@ -149,6 +168,7 @@ val_type kuhn_munkres(const val_type* mat, uint32_t m, uint32_t n, uint32_t *ret
             }
         }
     }
+#ifndef STACK_VERSION
     if (transposed) {
         free(dst);
     }
@@ -158,5 +178,6 @@ val_type kuhn_munkres(const val_type* mat, uint32_t m, uint32_t n, uint32_t *ret
     free(match_v);
     free(tmp_match);
     free(stack);
+#endif
     return ret;
 }
